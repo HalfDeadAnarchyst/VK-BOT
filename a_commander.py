@@ -42,10 +42,10 @@ def new_user(user_id):
     SQL_data("INSERT INTO user_type (user_USER_ID, rights) VALUES ('{user_id}', 'guest')".format(user_id=user_id), "input")
     return 1
 
-def command_buy(line, group_status):
+def command_buy(line):
     return "Магазин закрыт на обед"
 
-def command_get_character():
+def command_get_character(line):
     data = SQL_data("SELECT name, surname, race, money, gender FROM `character` WHERE CHAR_ID=1;", "get")
     output = "123456"
     if data == None:
@@ -55,8 +55,8 @@ def command_get_character():
 def commander(text, peer_id, user_id, conversation_message_id):
 
     commands = {
-        'купить': command_buy(line, group_status),
-        'персонаж': command_get_character()
+        'купить': command_buy,
+        'персонаж': command_get_character
     }
 
     output = -1
@@ -69,29 +69,18 @@ def commander(text, peer_id, user_id, conversation_message_id):
         group_status = 1 #разрешённая группа
     else:
         group_status = 2 #запрещённая группа
-'''
-    lines = text.split("\n")
-    for line in lines:
-        words = line.split(" ")
-        for case in switch(words[0]):
-            if case("купить"):
-                output = command_buy(line, group_status)
-                break;
-            if case("персонаж"):
-                output = command_get_character()
-                break;
-'''
+        return "Запрещённая группа"
 
     lines = text.split("\n")
     for line in lines:
         words = line.split(" ")
-        if words[0] in commands
-            commands.get[words[0]](line)
+        if words[0] in commands:
+            output = commands.get(words[0])(line)
 
         #switch lowercased text
         #SQL command if needed
         #return handled message
         #output = text.lower()
-    if output != -1:
+    if output == -1:
         output = "Команда не опознана"
-    return "Команда не опознана"
+    return output
