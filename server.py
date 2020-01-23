@@ -19,18 +19,18 @@ class Server:
                                   message=message,
                                   random_id=get_random_id())
 
-    def test(self):
-        self.send_msg(29627071, "Привет-привет!")
+#    def test(self):
+#        self.send_msg(29627071, "Привет-привет!")
 
-    def repeater(self):
-        for event in self.long_poll.listen(): #Проверка действий
-            print(event)
-            if event.type == VkBotEventType.MESSAGE_NEW:
-                if event.type == VkBotEventType.MESSAGE_NEW: # последняя строчка
-                #проверяем не пустое ли сообщение нам пришло
-                    if event.object.message["text"] != '':
-                        self.send_msg(event.object.message["peer_id"],
-                                      event.object.message["text"])
+#    def repeater(self):
+#        for event in self.long_poll.listen(): #Проверка действий
+#            print(event)
+#            if event.type == VkBotEventType.MESSAGE_NEW:
+#                if event.type == VkBotEventType.MESSAGE_NEW: # последняя строчка
+#                #проверяем не пустое ли сообщение нам пришло
+#                    if event.object.message["text"] != '':
+#                        self.send_msg(event.object.message["peer_id"],
+#                                      event.object.message["text"])
 
     def main(self):
         for event in self.long_poll.listen():
@@ -44,9 +44,3 @@ class Server:
                              event.object.message["conversation_message_id"])
                     self.send_msg(event.object.message["peer_id"],
                                   output)
-
-                    #for case in switch(x):
-                    #    if case('персонаж'): pass
-                    #    if case('Персонаж'):
-                    #        self.send_msg(event.object.message["peer_id"],
-                    #                      "Бугога")
