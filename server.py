@@ -2,7 +2,6 @@ import vk_api.vk_api
 from vk_api.bot_longpoll import VkBotLongPoll
 from vk_api.bot_longpoll import VkBotEventType
 from vk_api.utils import get_random_id
-from switch import switch
 from a_commander import commander
 
 class Server:
@@ -37,10 +36,10 @@ class Server:
             print(event)
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.object.message["text"] != '':
-                    output = commander(
-                             event.object.message["text"].lower(),
-                             event.object.message["peer_id"],
-                             event.object.message["from_id"],
-                             event.object.message["conversation_message_id"])
+                    output = commander(event)
+                             #event.object.message["text"].lower(),
+                             #event.object.message["peer_id"],
+                             #event.object.message["from_id"],
+                             #event.object.message["conversation_message_id"])
                     self.send_msg(event.object.message["peer_id"],
                                   output)
