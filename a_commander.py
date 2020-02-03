@@ -4,10 +4,10 @@ from commander_character import *
 
 
 def new_user(user_id):
-    status = SQL_get("SELECT USER_ID FROM user \
+    data = SQL_get("SELECT USER_ID FROM user \
                        WHERE user_id = {user_id};".\
                        format(user_id=event.object.message["from_id"]))
-    if status == None:
+    if data == None:
         current_date = str(datetime.date.today())
         SQL_set("INSERT INTO user (USER_ID, registration_date, status, selected_char) \
                  VALUES ('{user_id}', '{current_date}', 'Normal', '0');".\
@@ -39,10 +39,11 @@ def commander(event):
     if(event.object.message["conversation_message_id"] == 1):
         new_user(user_id)
 
-    status = SQL_get_user_status(event.object.message["from_id"])
+    user = SQL_get_user_info(event)
+    status = user[2]
 
     if status in statuses:
-        output += statuses.get(status)(event) + "\n"
+        output += statuses.get(status)(event, user) + "\n"
     else:
         lines = event.object.message["text"].split("\n")
         for line in lines:

@@ -32,6 +32,19 @@ from config import mysql_server_database, mysql_server_login
 
 #SQL connection commands
 
+
+def SQL_put_and_get_row_id(sql_command):
+    con = pymysql.connect(mysql_server_adress,   mysql_server_login,
+                          mysql_server_password, mysql_server_database,
+                          cursorclass=pymysql.cursors.DictCursor)
+    cur = con.cursor()
+    cur.execute(sql_command)
+    output = cursor.lastrowid
+    con.close()
+
+def SQL_set(sql_command):
+    SQL_put(sql_command) #To avoid some errors
+
 def SQL_put(sql_command):
     con = pymysql.connect(mysql_server_adress,   mysql_server_login,
                           mysql_server_password, mysql_server_database,
@@ -79,23 +92,22 @@ def SQL_hide_char(event, char_id):
              WHERE CHAR_ID = {char_id};".\
              format(char_id=char_id))
 
-def
-
 #user
-def SQL_get_user_status(event):
-    return SQL_get("SELECT status FROM user \
-                    WHERE user_id = {user_id};".\
+def SQL_get_user_info(event):
+    return SQL_get("SELECT * from `user` WHERE user_id = {user_id};".\
                     format(user_id=event.object.message["from_id"]))
 
-def SQL_get_user_status_and_char(event):
-    return SQL_get("SELECT status, selected_char FROM user \
-                   WHERE user_id = {user_id};".\
-                   format(user_id=event.object.message["from_id"]))
+def SQL_set_user_selected_char(event, char_id):
+    SQL_put("UPDATE user SET selected_char = '{char_id}'} \
+             WHERE user_id = {user_id};".\
+             format(user_id=event.object.message["from_id"],
+             char_id=char_id))
 
-def SQL_get_selected_char(event):
-    return SQL_get("SELECT selected_char FROM user \
-                   WHERE user_id = {user_id};".\
-                   format(user_id=event.object.message["from_id"]))
+def SQL_set_user_selected_char_and_status(event, char_id):
+    SQL_put("UPDATE user SET (selected_char = '{char_id}', status = 'char_edit'} \
+             WHERE user_id = {user_id};".\
+             format(user_id=event.object.message["from_id"],
+             char_id=char_id))
 
 def SQL_set_normal_status(event):
     SQL_put("UPDATE user SET status = 'Normal' \

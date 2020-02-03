@@ -39,28 +39,45 @@ def char_confirmed_delete(event):
         или 'нет' для отмены удаления персонажа"
 
 def char_create(event):
-    return bgggg
+    char_id = SQL_put_and_get_row_id("INSERT INTO `character` \
+              (user_id, status) VALUES ('{user_id}', 'editing');".\
+              format(user_id=event.object.message["from_id"]))
+    SQL_set_user_selected_char_and_status(event, char_id)
 
-def character_status_menu(event):
-    char = SQL_get_selected_char
+def char_menu_help(event, char_id, line):
+    return "Список доступных команд: \nдобавить \nинвентарь \nнавык \nпомощь \n"
 
-#main Function
-def character_menu(event):
-    statuses = {
-        'char_edit' :character_status_menu
-    }
+def character_status_menu(event, user, char_id):
 
     char_menu_commands = {
         'добавить':  char_add,
         'инвентарь': char_inventory,
         'навыки':    char_skills,
-        'навык':     char_skills
+        'навык':     char_skills,
+        'помощь':    char_menu_help
     }
 
     char_exit_menu_commands = {
         'выйти':   SQL_set_normal_status,
         'выход':   SQL_set_normal_status,
         'стоп':    SQL_set_normal_status
+    }
+
+    lines = event.object.message["text"].split("\n")
+    words = lines.split(" ")
+    if words[0] in char_menu_commands:
+        output += char_menu_commands.get(words[0])(event, char_id, words) + "\n"
+    elif words[0] in char_exit_menu_commands
+        SQL_set_normal_status(event)
+        output += "Режим работы с персонажем отключён \n"
+        return output
+    else:
+        output += "Команда " + words[0] + "не распознана"
+
+#main Function
+def character_menu(event, user):
+    statuses = {
+        'char_edit' :character_status_menu
     }
 
     char_non_menu_commands = {
@@ -72,25 +89,27 @@ def character_menu(event):
         'выбрать': char_choose,
     }
 
-    temp = SQL_get_user_status_and_char(event)
-    char_id = temp[1]
-    status = temp[0]
+    char_id = user[3]
+    status = user[2]
     #rewrite this shit
-    if status_line in statuses:
-        lines = event.object.message["text"].split("\n").split("\n")
-        for line in lines:
-            words = line.split(" ")
-            if words_[0] in char_menu_commands:
-                output += char_menu_commands.get(words[0])(event) + "\n"
-            elif words_[0] in char_exit_menu_commands:
-                SQL_set_normal_status(event)
-                break
-            else:
-                output += "Команда'" + line + "'не распознана \n"
+    if status in statuses:
+        character_status_menu(event, user, char_id)
+        #lines = event.object.message["text"].split("\n")
+        #for line in lines:
+        #    words = line.split(" ")
+        #    if words_[0] in char_menu_commands:
+        #        output += char_menu_commands.get(words[0])(event) + "\n"
+        #    elif words_[0] in char_exit_menu_commands:
+        #        SQL_set_normal_status(event)
+        #        break
+        #    else:
+        #        output += "Команда'" + line + "'не распознана \n"
     else:
         words = line.split(" ")
         if words[1] in char_non_menu_commands:
             output  += char_non_menu_commands.get(words[0])(event) + "\n"
+        else:
+            output += "Команда" + words[1] + "не распознана \n"
 
     output = "123456"
     return output
