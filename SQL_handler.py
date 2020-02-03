@@ -63,29 +63,59 @@ def SQL_get_all(sql_command):
 
 # SQL repeated commands
 
-#characters
+#character
 def SQL_get_char_name(char_id):
-    return SQL_get("SELECT name, surname FROM character \
-                     WHERE char_id = {char_id};".\
-                     format(char_id=char_id))
+    return SQL_get("SELECT name, surname FROM `character` \
+                    WHERE CHAR_ID = {char_id};".\
+                    format(char_id=char_id))
 
-def SQL_get_char_list(user_id):
-    return SQL_get_all("SELECT name, surname FROM character \
-                     WHERE user_id = {user_id};".\
-                     format(user_id=user_id))
+def SQL_get_char_list(event):
+    return SQL_get_all("SELECT name, surname FROM `character` \
+                        WHERE user_id = {user_id};".\
+                        format(user_id=event.object.message["from_id"]))
 
-#status
-def SQL_get_user_status(user_id):
+def SQL_hide_char(event, char_id):
+    SQL_set("UPDATE `character` SET status = 'hidden'\
+             WHERE CHAR_ID = {char_id};".\
+             format(char_id=char_id))
+
+def
+
+#user
+def SQL_get_user_status(event):
     return SQL_get("SELECT status FROM user \
-                     WHERE user_id = {user_id};".\
-                     format(user_id=user_id))
+                    WHERE user_id = {user_id};".\
+                    format(user_id=event.object.message["from_id"]))
 
-def SQL_set_normal_status(line, params):
+def SQL_get_user_status_and_char(event):
+    return SQL_get("SELECT status, selected_char FROM user \
+                   WHERE user_id = {user_id};".\
+                   format(user_id=event.object.message["from_id"]))
+
+def SQL_get_selected_char(event):
+    return SQL_get("SELECT selected_char FROM user \
+                   WHERE user_id = {user_id};".\
+                   format(user_id=event.object.message["from_id"]))
+
+def SQL_set_normal_status(event):
     SQL_put("UPDATE user SET status = 'Normal' \
               WHERE user_id = {user_id};".\
-              format(user_id=params[2]))
+              format(user_id=event.object.message["from_id"]))
 
-def SQL_set_custom_status(line, params, status):
+def SQL_set_custom_status(event, status):
     SQL_put("UPDATE user SET status = '{status}' \
               WHERE user_id = {user_id};".\
-              format(user_id=params[2], status=status))
+              format(user_id=event.object.message["from_id"], status=status))
+
+#user and character
+def SQL_get_selected_char_name(event):
+    return SQL_get("SELECT name, surname FROM `character` INNER JOIN user ON \
+                   `character`.CHAR_ID = user.selected_char \
+                   WHERE user.user_id = {user_id};".\
+                   format(user_id=event.object.message["from_id"]))
+
+def SQL_get_selected_char_all_info(event):
+    return SQL_get("SELECT * FROM `character` INNER JOIN user ON \
+                   `character`.CHAR_ID = user.selected_char \
+                   WHERE user.user_id = {user_id};".\
+                   format(user_id=event.object.message["from_id"]))
