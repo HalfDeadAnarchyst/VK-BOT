@@ -39,8 +39,10 @@ def SQL_put_and_get_row_id(sql_command):
                           cursorclass=pymysql.cursors.DictCursor)
     cur = con.cursor()
     cur.execute(sql_command)
-    output = cursor.lastrowid
+    output = cur.lastrowid
+    con.commit()
     con.close()
+    return output
 
 def SQL_set(sql_command):
     SQL_put(sql_command) #To avoid some errors
@@ -104,7 +106,7 @@ def SQL_set_user_selected_char(event, char_id):
              char_id=char_id))
 
 def SQL_set_user_selected_char_and_status(event, char_id):
-    SQL_put("UPDATE user SET (selected_char = '{char_id}', status = 'char_edit'} \
+    return SQL_put("UPDATE user SET selected_char={char_id},status ='char_edit' \
              WHERE user_id = {user_id};".\
              format(user_id=event.object.message["from_id"],
              char_id=char_id))

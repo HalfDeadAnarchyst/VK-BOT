@@ -36,6 +36,7 @@ class Server:
             print(event)
             if event.type == VkBotEventType.MESSAGE_NEW:
                 if event.object.message["text"] != '':
+                    event.object.message["text"] = event.object.message["text"].lower()
                     output = commander(event)
                              #event.object.message["text"].lower(),
                              #event.object.message["peer_id"],

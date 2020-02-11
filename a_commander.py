@@ -32,15 +32,16 @@ def commander(event):
 
     commands = {
         'купить': command_buy,
-        'персонаж': command_character_menu
+        'персонаж': character_menu
     }
 
     output = "\n"
     if(event.object.message["conversation_message_id"] == 1):
         new_user(user_id)
 
+    event.object.message["text"] = event.object.message["text"]
     user = SQL_get_user_info(event)
-    status = user[2]
+    status = user["status"]
 
     if status in statuses:
         output += statuses.get(status)(event, user) + "\n"
@@ -49,7 +50,7 @@ def commander(event):
         for line in lines:
             words = line.split(" ")
             if words[0] in commands:
-                output += commands.get(words[0])(event) + "\n"
+                output += commands.get(words[0])(event, user, line) + "\n"
 
 #    if peer_id == user_id:
 #        group_status = 0 #личные сообщения
