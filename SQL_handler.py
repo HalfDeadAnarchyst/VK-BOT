@@ -101,9 +101,9 @@ def SQL_set_char_free_param(char_id, stat, value):
 
 
 def SQL_set_char_cost_param(char_id, stat, points, remain):
-    SQL_set("UPDATE `character` SET ({stat} = '{value}', skillpoints = '{remain}')\
+    SQL_set("UPDATE `character` SET {stat} = {points}, skillpoints = {remain}\
             WHERE CHAR_ID = {char_id};".\
-            format(char_id=char_id, stat=stat, value=value, remain=remain))
+            format(char_id=char_id, stat=stat, points=points, remain=remain))
 #user
 def SQL_get_user_info(event):
     return SQL_get("SELECT * from `user` WHERE user_id = {user_id};".\

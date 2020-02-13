@@ -45,8 +45,9 @@ def char_status_create(event):
         'user.status': 'user.status',
         'selected_char': 'selected_char',
         'refnow': 'Настоящая ловкость',
-        'EMPNOW': 'Настоящая человечность',
+        'EMPnow': 'Настоящая человечность',
         'race': 'Раса'
+        'role'
     }
 
     visible_stats = {
@@ -83,7 +84,7 @@ def char_status_create(event):
                        vis_stat=visible_stats[element],\
                        char_stat=(char[element]))
         elif element in invisible_stats:
-            output += ' '
+            output += ''
         else:
             output += "{element} не найден!".format(element=element)
     return output
@@ -116,12 +117,16 @@ def char_add(event, user, char, words):
 
     output = ''
 
-    if words[1] in free stats:
+    if words[1] in free_stats:
         if user["status"] == "char_create":
-            if words[2].isdigit():
-                SQL_set_char_free_param(char['CHAR_ID'], free_stats(words[1]), words[2])
+            if words[2]:
+                if char[free_stats[words[1]]] == None:
+                    char[free_stats[words[1]]] = '[Пусто]'
+                words[2] = words[2].capitalize()
+                SQL_set_char_free_param(char['CHAR_ID'], free_stats[words[1]], words[2])
+                char[free_stats[words[1]]] += words[2]
             else:
-                output += 'Вы должны использовать число после названия параметра\n'
+                output += 'Вы должны написать что-нибудь после названия параметра\n'
         elif user["status"] == "char_edit":
             output += 'Вы не можете изменять {param} в уже созданном персонаже\n'.\
                        format(param=words[1])
@@ -129,9 +134,15 @@ def char_add(event, user, char, words):
             output += 'Ошибка в состоянии пользователя, сообщите администратору\n'
     elif words[1] in cost_stats:
         if words[2].isdigit():
-            if (int(char[skillpoints]) - int(words[2])) >= 0:
-                SQL_set_char_cost_param(char['CHAR_ID'], free_stats(words[1]), \
-                             words[2], (int(char[skillpoints]) - int(words[2])))
+            if ((char['skillpoints'] - int(words[2])) >= 0):
+                if char[cost_stats[words[1]]] == None:
+                    char[cost_stats[words[1]]] = 0
+                words[2] = int(words[2])
+                result = (char[cost_stats[words[1]]] + words[2])
+                SQL_set_char_cost_param(char['CHAR_ID'], cost_stats[words[1]], \
+                             result, char['skillpoints'] - words[2])
+                char[cost_stats[words[1]]] += words[2]
+                char['skillpoints'] -= words[2]
             else:
                 output += 'У вас не хватает {count} очков для добавления {need}\
                 к {param}'.format(count=(int(char[skillpoints]) - int(words[2])),\
@@ -185,7 +196,7 @@ def character_status_menu(event, user):
                    редактирования персонажа'
     }
 
-    output = char_status_create(event) + "\n"
+    output = ''
 
     lines = event.object.message["text"].split("\n")
     for line in lines:
@@ -200,6 +211,8 @@ def character_status_menu(event, user):
             output += char_outer_menu_commands.get(words[0])() + "\n"
         else:
             output += "Команда " + words[0] + " не распознана"
+
+    output = char_status_create(event) + "\n" + output
 
     return output
 
