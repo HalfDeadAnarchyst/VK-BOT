@@ -94,6 +94,16 @@ def SQL_hide_char(event, char_id):
              WHERE CHAR_ID = {char_id};".\
              format(char_id=char_id))
 
+def SQL_set_char_free_param(char_id, stat, value):
+    SQL_set("UPDATE `character` SET {stat} = '{value}'\
+            WHERE CHAR_ID = {char_id};".\
+            format(char_id=char_id, stat=stat, value=value))
+
+
+def SQL_set_char_cost_param(char_id, stat, points, remain):
+    SQL_set("UPDATE `character` SET ({stat} = '{value}', skillpoints = '{remain}')\
+            WHERE CHAR_ID = {char_id};".\
+            format(char_id=char_id, stat=stat, value=value, remain=remain))
 #user
 def SQL_get_user_info(event):
     return SQL_get("SELECT * from `user` WHERE user_id = {user_id};".\
@@ -106,7 +116,7 @@ def SQL_set_user_selected_char(event, char_id):
              char_id=char_id))
 
 def SQL_set_user_selected_char_and_status(event, char_id):
-    return SQL_put("UPDATE user SET selected_char={char_id},status ='char_edit' \
+    return SQL_put("UPDATE user SET selected_char={char_id},status ='char_create' \
              WHERE user_id = {user_id};".\
              format(user_id=event.object.message["from_id"],
              char_id=char_id))

@@ -27,6 +27,7 @@ def commander(event):
 
     statuses = {
         'char_edit' :character_status_menu,
+        'char_create': character_status_menu,
         'char_del'  :char_confirmed_delete
     }
 
