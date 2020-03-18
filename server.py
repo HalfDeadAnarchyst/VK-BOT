@@ -35,7 +35,7 @@ class Server:
         for event in self.long_poll.listen():
             print(event)
             if event.type == VkBotEventType.MESSAGE_NEW:
-                if event.object.message["text"] != '':
+                if  event.object.message["text"] != '':
                     event.object.message["text"] = event.object.message["text"].lower()
                     output = commander(event)
                              #event.object.message["text"].lower(),

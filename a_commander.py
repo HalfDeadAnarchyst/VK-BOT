@@ -3,7 +3,7 @@ from SQL_handler import *
 from commander_character import *
 
 
-def new_user(user_id):
+def new_user(event):
     data = SQL_get("SELECT USER_ID FROM user \
                        WHERE user_id = {user_id};".\
                        format(user_id=event.object.message["from_id"]))
@@ -19,8 +19,11 @@ def new_user(user_id):
     return 0
 
 
-def command_buy(event):
+def command_buy(event, user, line):
     return "Магазин закрыт на обед"
+
+def command_help(event, user, line):
+    return 'Помощь\nПерсонаж\nКупить'
 
 # main commander
 def commander(event):
@@ -33,15 +36,18 @@ def commander(event):
 
     commands = {
         'купить': command_buy,
-        'персонаж': character_menu
+        'персонаж': character_menu,
+        'помощь': command_help
     }
 
     output = "\n"
-    if(event.object.message["conversation_message_id"] == 1):
-        new_user(user_id)
+    #if(event.object.message["conversation_message_id"] == 1):
 
-    event.object.message["text"] = event.object.message["text"]
+
     user = SQL_get_user_info(event)
+    if user == None:
+        new_user(event)
+        user = SQL_get_user_info(event)
     status = user["status"]
 
     if status in statuses:

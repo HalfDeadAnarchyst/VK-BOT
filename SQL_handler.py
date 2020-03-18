@@ -85,14 +85,15 @@ def SQL_get_char_name(char_id):
                     format(char_id=char_id))
 
 def SQL_get_char_list(event):
-    return SQL_get_all("SELECT name, surname FROM `character` \
-                        WHERE user_id = {user_id};".\
+    return SQL_get_all("SELECT name, surname, CHAR_ID FROM `character` \
+                        WHERE user_id={user_id} AND status <> 'hidden' \
+                        AND status <> 'killed';".\
                         format(user_id=event.object.message["from_id"]))
 
-def SQL_hide_char(event, char_id):
-    SQL_set("UPDATE `character` SET status = 'hidden'\
-             WHERE CHAR_ID = {char_id};".\
-             format(char_id=char_id))
+def SQL_set_char_status(event, char_id, status):
+    SQL_set("UPDATE `character` SET status = '{status}'\
+            WHERE CHAR_ID = {char_id};".\
+            format(char_id=char_id, status=status))
 
 def SQL_set_char_free_param(char_id, stat, value):
     SQL_set("UPDATE `character` SET {stat} = '{value}'\
@@ -104,13 +105,26 @@ def SQL_set_char_cost_param(char_id, stat, points, remain):
     SQL_set("UPDATE `character` SET {stat} = {points}, skillpoints = {remain}\
             WHERE CHAR_ID = {char_id};".\
             format(char_id=char_id, stat=stat, points=points, remain=remain))
+
+def SQL_remove_char_completely(char_id):
+    SQL_set("DELETE FROM `character` WHERE CHAR_ID={char_id};").\
+            format(char_id=char_id)
+
+def SQL_select_char_by_name(event, name):
+    SQL_get("SELECT CHAR_ID, name, surname from `character` WHERE user_id={user_id} AND name = '{name}'").\
+            format(user_id=event.object.message["from_id"], name=name)
+
+def SQL_select_char_by_surname(event, surname):
+    SQL_get("SELECT CHAR_ID, name, surname from `character` WHERE user_id={user_id} AND surname = '{surname}'").\
+            format(user_id=event.object.message["from_id"], surname=surname)
+
 #user
 def SQL_get_user_info(event):
     return SQL_get("SELECT * from `user` WHERE user_id = {user_id};".\
                     format(user_id=event.object.message["from_id"]))
 
 def SQL_set_user_selected_char(event, char_id):
-    SQL_put("UPDATE user SET selected_char = '{char_id}'} \
+    SQL_put("UPDATE user SET selected_char = '{char_id}' \
              WHERE user_id = {user_id};".\
              format(user_id=event.object.message["from_id"],
              char_id=char_id))
@@ -143,3 +157,11 @@ def SQL_get_selected_char_all_info(event):
                    `character`.CHAR_ID = user.selected_char \
                    WHERE user.user_id = {user_id};".\
                    format(user_id=event.object.message["from_id"]))
+
+def SQL_hide_char(event):
+    return SQL_put("UPDATE `character` \
+                    INNER JOIN user ON `character`.CHAR_ID = user.selected_char \
+                    SET user.selected_char = 0, user.status = 'Normal', \
+                    `character`.status = 'hidden' \
+                    WHERE user.user_id = {user_id};".\
+                    format(user_id=event.object.message["from_id"]))
